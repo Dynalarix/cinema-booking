@@ -3,3 +3,11 @@ __pycache__/
 .pytest_cache/
 .venv/
 .env
+
+# Учебные материалы и личные файлы — не часть проекта
+pravila-oformlenia.pdf
+Задание*.docx
+Report_for_review.txt
+starter.sh
+report/
+logs/
