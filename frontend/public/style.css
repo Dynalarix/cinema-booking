@@ -1,0 +1,43 @@
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f4f5f7; color: #222; }
+h1 { font-size: 1.3rem; margin: 0; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1rem; margin: 0 0 .6rem; }
+
+header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
+         padding: .8rem 1.5rem; background: #2c3e50; color: #fff; }
+nav { display: flex; gap: .3rem; }
+nav button { background: transparent; color: #fff; border: 1px solid transparent; }
+nav button.active { border-color: #fff; }
+main { padding: 0 1.5rem 2rem; }
+
+button { padding: .45rem .9rem; border: 1px solid #2c3e50; border-radius: 4px; background: #2c3e50;
+         color: #fff; cursor: pointer; font: inherit; }
+button.secondary { background: #fff; color: #2c3e50; }
+button.danger { background: #c0392b; border-color: #c0392b; }
+td button { padding: .2rem .5rem; font-size: .85rem; margin-right: .2rem; }
+
+input, select { padding: .4rem; border: 1px solid #bbb; border-radius: 4px; font: inherit; width: 100%; }
+label { display: flex; flex-direction: column; gap: .2rem; font-size: .85rem; }
+
+.card { background: #fff; border-radius: 6px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.entity-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+               gap: .7rem; align-items: end; margin-bottom: 1rem; }
+.entity-form .buttons { display: flex; gap: .4rem; }
+
+.login { max-width: 340px; margin: 15vh auto; display: flex; flex-direction: column; gap: .8rem; }
+.error { color: #c0392b; min-height: 1em; margin: 0; }
+.message { margin: 1rem 1.5rem 0; padding: .6rem 1rem; border-radius: 4px; background: #fdecea; color: #c0392b; }
+.message.ok { background: #e8f6ec; color: #1e7e34; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: #fff; font-size: .9rem; }
+th, td { padding: .45rem .6rem; border-bottom: 1px solid #e3e3e3; text-align: left; }
+th { background: #ecf0f1; }
+
+.queries { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+.queries form { display: flex; flex-direction: column; gap: .6rem; }
+.queries form > button { align-self: flex-start; }
+.result:empty { display: none; }
+.empty { color: #777; font-style: italic; }
