@@ -1,147 +1,555 @@
 <!doctype html>
+
 <html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta
+name=“description”
+content=“Справочная служба кинотеатров — информация о кинотеатрах, фильмах и репертуаре”
+
   <title>Справочная служба кинотеатров</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- Экран входа -->
-<section id="login-view">
-  <form id="login-form" class="card login">
-    <h1>Справочная служба кинотеатров</h1>
-    <label>Логин <input name="username" required autocomplete="username"></label>
-    <label>Пароль <input name="password" type="password" required autocomplete="current-password"></label>
-    <button type="submit">Войти</button>
-    <p id="login-error" class="error"></p>
-  </form>
-</section>
-
-<!-- Основной экран -->
-<section id="app-view" hidden>
-  <header>
-    <h1>Справочная служба кинотеатров</h1>
-    <nav>
-      <button data-tab="cinemas" class="active">Кинотеатры</button>
-      <button data-tab="films">Фильмы</button>
-      <button data-tab="screenings">Репертуар</button>
-      <button data-tab="queries">Запросы</button>
+  <section id="login-view" aria-labelledby="login-title">
+    <form id="login-form" class="card login">
+      <h1 id="login-title">Справочная служба кинотеатров</h1>
+  <div class="form-fields">
+    <label for="login-username">
+      Логин
+    </label>
+    <input
+      id="login-username"
+      name="username"
+      type="text"
+      required
+      autocomplete="username"
+    >
+    <label for="login-password">
+      Пароль
+    </label>
+    <input
+      id="login-password"
+      name="password"
+      type="password"
+      required
+      autocomplete="current-password"
+    >
+  </div>
+  <button type="submit">
+    Войти
+  </button>
+  <p
+    id="login-error"
+    class="error"
+    role="alert"
+    aria-live="polite"
+  ></p>
+</form>
+  </section>
+  <section id="app-view" hidden aria-label="Основное приложение">
+<header>
+  <div class="header-content">
+    <div class="brand">
+      <h1>Справочная служба кинотеатров</h1>
+    </div>
+    <nav aria-label="Основная навигация">
+      <button
+        type="button"
+        data-tab="cinemas"
+        class="active"
+        aria-selected="true"
+      >
+        Кинотеатры
+      </button>
+      <button
+        type="button"
+        data-tab="films"
+        aria-selected="false"
+      >
+        Фильмы
+      </button>
+      <button
+        type="button"
+        data-tab="screenings"
+        aria-selected="false"
+      >
+        Репертуар
+      </button>
+      <button
+        type="button"
+        data-tab="queries"
+        aria-selected="false"
+      >
+        Запросы
+      </button>
     </nav>
-    <div class="user"><span id="user-info"></span> <button id="logout">Выйти</button></div>
-  </header>
-
-  <p id="message" class="message" hidden></p>
-
-  <main>
-    <!-- Кинотеатры -->
-    <section id="tab-cinemas" class="tab">
-      <h2>Сведения о кинотеатрах</h2>
-      <form id="cinemas-form" class="card entity-form admin-only">
-        <label>Название <input name="name" required></label>
-        <label>Адрес <input name="address" required></label>
-        <label>Категория
-          <select name="category"><option>Высшая</option><option>Первая</option><option>Вторая</option></select>
+    <div class="user">
+      <span id="user-info"></span>
+      <button
+        id="logout"
+        type="button"
+      >
+        Выйти
+      </button>
+    </div>
+  </div>
+</header>
+<p
+  id="message"
+  class="message"
+  hidden
+  role="status"
+  aria-live="polite"
+></p>
+<main>
+  <section
+    id="tab-cinemas"
+    class="tab"
+    aria-labelledby="cinemas-title"
+  >
+    <div class="section-header">
+      <h2 id="cinemas-title">Сведения о кинотеатрах</h2>
+    </div>
+    <form
+      id="cinemas-form"
+      class="card entity-form admin-only"
+    >
+      <h3>Добавить кинотеатр</h3>
+      <div class="form-grid">
+        <label>
+          Название
+          <input
+            name="name"
+            type="text"
+            required
+            autocomplete="organization"
+          >
         </label>
-        <label>Кол. мест <input name="seats_count" type="number" min="1" required></label>
-        <label>Кол. залов <input name="halls_count" type="number" min="1" required></label>
-        <label>Состояние
-          <select name="status"><option>Работает</option><option>На ремонте</option><option>Закрыт</option></select>
+        <label>
+          Адрес
+          <input
+            name="address"
+            type="text"
+            required
+            autocomplete="street-address"
+          >
         </label>
-        <div class="buttons"><button type="submit">Добавить</button><button type="button" class="cancel" hidden>Отмена</button></div>
-      </form>
-      <div class="table-wrap"><table id="cinemas-table"></table></div>
-    </section>
-
-    <!-- Фильмы -->
-    <section id="tab-films" class="tab" hidden>
-      <h2>Сведения о фильмах</h2>
-      <form id="films-form" class="card entity-form admin-only">
-        <label>Название <input name="title" required></label>
-        <label>Режиссёр <input name="director" required></label>
-        <label>Оператор <input name="operator" required></label>
-        <label>Актёры <input name="actors" required placeholder="через запятую"></label>
-        <label>Жанр
-          <select name="genre">
-            <option>Боевик</option><option>Комедия</option><option>Драма</option><option>Фантастика</option>
-            <option>Мелодрама</option><option>Триллер</option><option>Ужасы</option><option>Мультфильм</option>
+        <label>
+          Категория
+          <select name="category">
+            <option value="Высшая">Высшая</option>
+            <option value="Первая">Первая</option>
+            <option value="Вторая">Вторая</option>
           </select>
         </label>
-        <label>Киностудия <input name="studio" required></label>
-        <div class="buttons"><button type="submit">Добавить</button><button type="button" class="cancel" hidden>Отмена</button></div>
-      </form>
-      <div class="table-wrap"><table id="films-table"></table></div>
-    </section>
-
-    <!-- Репертуар -->
-    <section id="tab-screenings" class="tab" hidden>
-      <h2>Сведения о репертуаре</h2>
-      <form id="screenings-form" class="card entity-form admin-only">
-        <label>Кинотеатр <select name="cinema_id" class="cinema-select" data-number required></select></label>
-        <label>Фильм <select name="film_id" class="film-select" data-number required></select></label>
-        <label>Зал <input name="hall" type="number" min="1" value="1" required></label>
-        <label>Дата <input name="date" type="date" required></label>
-        <label>Сеанс <input name="time" type="time" required></label>
-        <label>Цена, ₽ <input name="price" type="number" min="0" required></label>
-        <label>Свободных мест <input name="free_seats" type="number" min="0" required></label>
-        <div class="buttons"><button type="submit">Добавить</button><button type="button" class="cancel" hidden>Отмена</button></div>
-      </form>
-      <div class="table-wrap"><table id="screenings-table"></table></div>
-    </section>
-
-    <!-- Запросы -->
-    <section id="tab-queries" class="tab" hidden>
-      <h2>Запросы справочной службы</h2>
-      <div class="queries">
-        <form id="q-repertoire" class="card">
-          <h3>1. Репертуар кинотеатра</h3>
-          <label>Кинотеатр <select name="cinema_id" class="cinema-select"></select></label>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
-
-        <form id="q-action" class="card" data-genre="Боевик">
-          <h3>2. В каких кинотеатрах можно посмотреть боевики</h3>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
-
-        <form id="q-free-seats" class="card">
-          <h3>3. Число свободных мест на сеанс</h3>
-          <label>Кинотеатр <select name="cinema_id" class="cinema-select"></select></label>
-          <label>Дата <input name="date" type="date" required></label>
-          <label>Сеанс <input name="time" type="time" required></label>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
-
-        <form id="q-price" class="card">
-          <h3>4. Цена билетов на сеанс</h3>
-          <label>Кинотеатр <select name="cinema_id" class="cinema-select"></select></label>
-          <label>Дата <input name="date" type="date" required></label>
-          <label>Сеанс <input name="time" type="time" required></label>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
-
-        <form id="q-director" class="card">
-          <h3>5. Фильмы режиссёра в прокате</h3>
-          <label>Режиссёр <input name="director" required placeholder="например, Гайдай"></label>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
-
-        <form id="q-comedy" class="card" data-genre="Комедия">
-          <h3>6. В каких кинотеатрах демонстрируются комедии</h3>
-          <button type="submit">Показать</button>
-          <div class="result"></div>
-        </form>
+        <label>
+          Количество мест
+          <input
+            name="seats_count"
+            type="number"
+            min="1"
+            step="1"
+            required
+          >
+        </label>
+        <label>
+          Количество залов
+          <input
+            name="halls_count"
+            type="number"
+            min="1"
+            step="1"
+            required
+          >
+        </label>
+        <label>
+          Состояние
+          <select name="status">
+            <option value="Работает">Работает</option>
+            <option value="На ремонте">На ремонте</option>
+            <option value="Закрыт">Закрыт</option>
+          </select>
+        </label>
       </div>
-    </section>
-  </main>
-</section>
-
-<script src="app.js"></script>
+      <div class="buttons">
+        <button type="submit">
+          Добавить
+        </button>
+        <button
+          type="button"
+          class="cancel"
+          hidden
+        >
+          Отмена
+        </button>
+      </div>
+    </form>
+    <div class="table-wrap">
+      <table id="cinemas-table">
+        <caption class="sr-only">
+          Список кинотеатров
+        </caption>
+      </table>
+    </div>
+  </section>
+  <section
+    id="tab-films"
+    class="tab"
+    hidden
+    aria-labelledby="films-title"
+  >
+    <div class="section-header">
+      <h2 id="films-title">Сведения о фильмах</h2>
+    </div>
+    <form
+      id="films-form"
+      class="card entity-form admin-only"
+    >
+      <h3>Добавить фильм</h3>
+      <div class="form-grid">
+        <label>
+          Название
+          <input
+            name="title"
+            type="text"
+            required
+          >
+        </label>
+        <label>
+          Режиссёр
+          <input
+            name="director"
+            type="text"
+            required
+          >
+        </label>
+        <label>
+          Оператор
+          <input
+            name="operator"
+            type="text"
+            required
+          >
+        </label>
+        <label>
+          Актёры
+          <input
+            name="actors"
+            type="text"
+            required
+            placeholder="например: Иванов, Петров, Сидорова"
+          >
+        </label>
+        <label>
+          Жанр
+          <select name="genre">
+            <option value="Боевик">Боевик</option>
+            <option value="Комедия">Комедия</option>
+            <option value="Драма">Драма</option>
+            <option value="Фантастика">Фантастика</option>
+            <option value="Мелодрама">Мелодрама</option>
+            <option value="Триллер">Триллер</option>
+            <option value="Ужасы">Ужасы</option>
+            <option value="Мультфильм">Мультфильм</option>
+          </select>
+        </label>
+        <label>
+          Киностудия
+          <input
+            name="studio"
+            type="text"
+            required
+          >
+        </label>
+      </div>
+      <div class="buttons">
+        <button type="submit">
+          Добавить
+        </button>
+        <button
+          type="button"
+          class="cancel"
+          hidden
+        >
+          Отмена
+        </button>
+      </div>
+    </form>
+    <div class="table-wrap">
+      <table id="films-table">
+        <caption class="sr-only">
+          Список фильмов
+        </caption>
+      </table>
+    </div>
+  </section>
+  <section
+    id="tab-screenings"
+    class="tab"
+    hidden
+    aria-labelledby="screenings-title"
+  >
+    <div class="section-header">
+      <h2 id="screenings-title">Сведения о репертуаре</h2>
+    </div>
+    <form
+      id="screenings-form"
+      class="card entity-form admin-only"
+    >
+      <h3>Добавить сеанс</h3>
+      <div class="form-grid">
+        <label>
+          Кинотеатр
+          <select
+            name="cinema_id"
+            class="cinema-select"
+            data-number
+            required
+          ></select>
+        </label>
+        <label>
+          Фильм
+          <select
+            name="film_id"
+            class="film-select"
+            data-number
+            required
+          ></select>
+        </label>
+        <label>
+          Зал
+          <input
+            name="hall"
+            type="number"
+            min="1"
+            step="1"
+            value="1"
+            required
+          >
+        </label>
+        <label>
+          Дата
+          <input
+            name="date"
+            type="date"
+            required
+          >
+        </label>
+        <label>
+          Сеанс
+          <input
+            name="time"
+            type="time"
+            required
+          >
+        </label>
+        <label>
+          Цена, ₽
+          <input
+            name="price"
+            type="number"
+            min="0"
+            step="1"
+            required
+          >
+        </label>
+        <label>
+          Свободных мест
+          <input
+            name="free_seats"
+            type="number"
+            min="0"
+            step="1"
+            required
+          >
+        </label>
+      </div>
+      <div class="buttons">
+        <button type="submit">
+          Добавить
+        </button>
+        <button
+          type="button"
+          class="cancel"
+          hidden
+        >
+          Отмена
+        </button>
+      </div>
+    </form>
+    <div class="table-wrap">
+      <table id="screenings-table">
+        <caption class="sr-only">
+          Расписание киносеансов
+        </caption>
+      </table>
+    </div>
+  </section>
+  <section
+    id="tab-queries"
+    class="tab"
+    hidden
+    aria-labelledby="queries-title"
+  >
+    <div class="section-header">
+      <h2 id="queries-title">Запросы справочной службы</h2>
+      <p class="section-description">
+        Выберите необходимый запрос и укажите параметры поиска.
+      </p>
+    </div>
+    <div class="queries">
+      <form
+        id="q-repertoire"
+        class="card"
+      >
+        <h3>1. Репертуар кинотеатра</h3>
+        <label>
+          Кинотеатр
+          <select
+            name="cinema_id"
+            class="cinema-select"
+            required
+          ></select>
+        </label>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+      <form
+        id="q-action"
+        class="card"
+        data-genre="Боевик"
+      >
+        <h3>2. В каких кинотеатрах можно посмотреть боевики</h3>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+      <form
+        id="q-free-seats"
+        class="card"
+      >
+        <h3>3. Число свободных мест на сеанс</h3>
+        <label>
+          Кинотеатр
+          <select
+            name="cinema_id"
+            class="cinema-select"
+            required
+          ></select>
+        </label>
+        <label>
+          Дата
+          <input
+            name="date"
+            type="date"
+            required
+          >
+        </label>
+        <label>
+          Сеанс
+          <input
+            name="time"
+            type="time"
+            required
+          >
+        </label>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+      <form
+        id="q-price"
+        class="card"
+      >
+        <h3>4. Цена билетов на сеанс</h3>
+        <label>
+          Кинотеатр
+          <select
+            name="cinema_id"
+            class="cinema-select"
+            required
+          ></select>
+        </label>
+        <label>
+          Дата
+          <input
+            name="date"
+            type="date"
+            required
+          >
+        </label>
+        <label>
+          Сеанс
+          <input
+            name="time"
+            type="time"
+            required
+          >
+        </label>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+      <form
+        id="q-director"
+        class="card"
+      >
+        <h3>5. Фильмы режиссёра в прокате</h3>
+        <label>
+          Режиссёр
+          <input
+            name="director"
+            type="text"
+            required
+            placeholder="например, Гайдай"
+          >
+        </label>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+      <form
+        id="q-comedy"
+        class="card"
+        data-genre="Комедия"
+      >
+        <h3>6. В каких кинотеатрах демонстрируются комедии</h3>
+        <button type="submit">
+          Показать
+        </button>
+        <div
+          class="result"
+          aria-live="polite"
+        ></div>
+      </form>
+    </div>
+  </section>
+</main>
+  </section>
+  <script src="app.js"></script>
 </body>
 </html>
