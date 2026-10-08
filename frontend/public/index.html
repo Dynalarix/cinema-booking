@@ -85,6 +85,13 @@ content=“Справочная служба кинотеатров — инфо
       >
         Запросы
       </button>
+      <button
+        type="button"
+        data-tab="assistant"
+        aria-selected="false"
+      >
+        Ассистент
+      </button>
     </nav>
     <div class="user">
       <span id="user-info"></span>
@@ -545,6 +552,36 @@ content=“Справочная служба кинотеатров — инфо
           class="result"
           aria-live="polite"
         ></div>
+      </form>
+    </div>
+  </section>
+  <section
+    id="tab-assistant"
+    class="tab"
+    hidden
+    aria-labelledby="assistant-title"
+  >
+    <div class="section-header">
+      <h2 id="assistant-title">Ассистент</h2>
+      <p class="section-description">
+        Задавайте вопросы на обычном языке:
+        «репертуар Рассвета», «фильмы Гайдая», «где идут боевики»,
+        «цена билетов в Рассвете завтра в 19:00», «продай 2 билета в Звезде на завтра 19:00».
+      </p>
+    </div>
+    <div class="chat card">
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+      <form id="chat-form" class="chat-form">
+        <label for="chat-input" class="sr-only">Запрос ассистенту</label>
+        <input
+          id="chat-input"
+          name="message"
+          type="text"
+          autocomplete="off"
+          placeholder="Напишите вопрос и нажмите Enter"
+          required
+        >
+        <button type="submit">Отправить</button>
       </form>
     </div>
   </section>

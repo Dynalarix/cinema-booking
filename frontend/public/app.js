@@ -297,6 +297,56 @@ setupQuery("q-director", async ({ director }, result) => {
   resultTable(result, COLUMNS.films.filter(([f]) => f !== "actors"), rows);
 });
 
+// ---------- Ассистент ----------
+
+const chatForm = document.getElementById("chat-form");
+const chatInput = document.getElementById("chat-input");
+const chatLog = document.getElementById("chat-log");
+
+// Добавляет сообщение в журнал чата. Если переданы колонки и данные — рисует таблицу.
+function chatPost(role, reply) {
+  const message = document.createElement("div");
+  message.className = "chat-message chat-" + role;
+  const text = document.createElement("p");
+  text.textContent = reply.text;
+  message.appendChild(text);
+  if (reply.columns && reply.columns.length && reply.rows && reply.rows.length) {
+    const wrap = message.appendChild(document.createElement("div"));
+    wrap.className = "table-wrap";
+    const table = wrap.appendChild(document.createElement("table"));
+    const head = table.insertRow();
+    for (const column of reply.columns) {
+      head.appendChild(document.createElement("th")).textContent = column.title;
+    }
+    for (const row of reply.rows) {
+      const tr = table.insertRow();
+      for (const column of reply.columns) {
+        tr.insertCell().textContent = row[column.field] ?? "";
+      }
+    }
+  }
+  chatLog.appendChild(message);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = chatInput.value.trim();
+  if (!message) return;
+  chatPost("user", { text: message });
+  chatInput.value = "";
+  chatInput.disabled = true;
+  try {
+    const reply = await api("/assistant/ask", { method: "POST", json: { message } });
+    chatPost("bot", reply);
+  } catch (e) {
+    chatPost("bot", { text: "Ошибка: " + e.message });
+  } finally {
+    chatInput.disabled = false;
+    chatInput.focus();
+  }
+});
+
 // ---------- Запуск ----------
 
 // Если токен сохранился с прошлого раза — сразу открываем приложение

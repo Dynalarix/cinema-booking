@@ -9,5 +9,9 @@ pravila-oformlenia.pdf
 Задание*.docx
 Report_for_review.txt
 starter.sh
-report/
+# Папка отчёта скрыта, но готовый .docx отчёт в репозитории
+report/*
+!report/build/
+report/build/*
+!report/build/report.docx
 logs/
