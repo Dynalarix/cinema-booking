@@ -7,7 +7,7 @@
 
 import datetime as dt
 
-from test_api import make_cinema, make_film, make_screening
+from .test_api import make_cinema, make_film, make_screening
 
 TODAY = dt.date.today().isoformat()
 
