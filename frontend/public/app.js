@@ -46,6 +46,98 @@ function showMessage(text, ok = false) {
   showMessage.timer = setTimeout(() => (el.hidden = true), 4000);
 }
 
+// ---------- Темы оформления ----------
+
+// id совпадает с data-theme в style.css; swatch — образец для меню, color — цвет панели браузера на телефоне
+const THEMES = [
+  { id: "light",  name: "Светлая",  color: "#2c3e50", swatch: "linear-gradient(135deg, #f4f5f7 50%, #2c3e50 50%)" },
+  { id: "dark",   name: "Тёмная",   color: "#1a2230", swatch: "linear-gradient(135deg, #1c222b 50%, #3d6a99 50%)" },
+  { id: "sunset", name: "Закат",    color: "#ec4899", swatch: "linear-gradient(135deg, #f97316, #ec4899, #8b5cf6)" },
+  { id: "ocean",  name: "Океан",    color: "#0e7490", swatch: "linear-gradient(135deg, #0b2440, #0284c7, #0d9488)" },
+  { id: "aurora", name: "Аврора",   color: "#4c1d95", swatch: "linear-gradient(135deg, #7c3aed, #ec4899, #06b6d4)" },
+  { id: "cinema", name: "Кинозал",  color: "#4a0b16", swatch: "linear-gradient(135deg, #7f1d2d 45%, #e7c26a 55%)" },
+];
+
+function savedTheme() {
+  try { return localStorage.getItem("theme"); } catch { return null; }
+}
+
+function applyTheme(id) {
+  const theme = THEMES.find((t) => t.id === id) || THEMES[0];
+  document.documentElement.dataset.theme = theme.id;
+  document.querySelector('meta[name="theme-color"]').content = theme.color;
+  document.querySelectorAll(".theme-picker").forEach((picker) => {
+    picker.querySelector(".theme-button .swatch").style.background = theme.swatch;
+    picker.querySelector(".theme-button").title = "Тема: " + theme.name;
+    picker.querySelectorAll(".theme-menu button").forEach((b) => {
+      b.setAttribute("aria-checked", String(b.dataset.theme === theme.id));
+    });
+  });
+}
+
+function closeThemeMenus(except) {
+  document.querySelectorAll(".theme-picker").forEach((picker) => {
+    if (picker === except) return;
+    picker.querySelector(".theme-menu").hidden = true;
+    picker.querySelector(".theme-button").setAttribute("aria-expanded", "false");
+  });
+}
+
+// Строит кнопку и меню внутри каждого <div class="theme-picker"> из index.html
+document.querySelectorAll(".theme-picker").forEach((picker) => {
+  const button = picker.appendChild(document.createElement("button"));
+  button.type = "button";
+  button.className = "theme-button";
+  button.setAttribute("aria-label", "Выбрать тему оформления");
+  button.setAttribute("aria-haspopup", "menu");
+  button.setAttribute("aria-expanded", "false");
+  button.appendChild(document.createElement("span")).className = "swatch";
+
+  const menu = picker.appendChild(document.createElement("div"));
+  menu.className = "theme-menu";
+  menu.setAttribute("role", "menu");
+  menu.hidden = true;
+  for (const theme of THEMES) {
+    const item = menu.appendChild(document.createElement("button"));
+    item.type = "button";
+    item.dataset.theme = theme.id;
+    item.setAttribute("role", "menuitemradio");
+    const swatch = item.appendChild(document.createElement("span"));
+    swatch.className = "swatch";
+    swatch.style.background = theme.swatch;
+    item.append(theme.name);
+    item.addEventListener("click", () => {
+      try { localStorage.setItem("theme", theme.id); } catch {}
+      applyTheme(theme.id);
+      closeThemeMenus();
+      button.focus();
+    });
+  }
+
+  button.addEventListener("click", () => {
+    const open = menu.hidden;
+    closeThemeMenus(picker);
+    menu.hidden = !open;
+    button.setAttribute("aria-expanded", String(open));
+    if (open) menu.querySelector('[aria-checked="true"]')?.focus();
+  });
+});
+
+// Меню закрывается кликом мимо него и клавишей Esc
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".theme-picker")) closeThemeMenus();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeThemeMenus();
+});
+
+// Пока пользователь сам не выбрал тему, следуем системной (светлая/тёмная)
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+  if (!savedTheme()) applyTheme(event.matches ? "dark" : "light");
+});
+
+applyTheme(document.documentElement.dataset.theme);
+
 // ---------- Вход и выход ----------
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {
@@ -117,15 +209,19 @@ function renderTable(table, columns, rows, actions) {
     table.innerHTML = '<tr><td class="empty">Нет данных</td></tr>';
     return;
   }
-  const head = table.insertRow();
+  const head = table.createTHead().insertRow();
   for (const [, title] of columns) head.appendChild(document.createElement("th")).textContent = title;
   if (actions) head.appendChild(document.createElement("th"));
 
+  const body = table.createTBody();
   for (const row of rows) {
-    const tr = table.insertRow();
-    for (const [field, , format] of columns) {
+    const tr = body.insertRow();
+    for (const [field, title, format] of columns) {
       // textContent, а не innerHTML — чтобы данные не могли внедрить HTML-код
-      tr.insertCell().textContent = format ? format(row[field]) : row[field];
+      const cell = tr.insertCell();
+      cell.textContent = format ? format(row[field]) : row[field];
+      // Подпись колонки — для показа таблицы карточками на телефоне
+      cell.dataset.label = title;
     }
     if (actions) {
       const cell = tr.insertCell();
@@ -314,14 +410,17 @@ function chatPost(role, reply) {
     const wrap = message.appendChild(document.createElement("div"));
     wrap.className = "table-wrap";
     const table = wrap.appendChild(document.createElement("table"));
-    const head = table.insertRow();
+    const head = table.createTHead().insertRow();
     for (const column of reply.columns) {
       head.appendChild(document.createElement("th")).textContent = column.title;
     }
+    const body = table.createTBody();
     for (const row of reply.rows) {
-      const tr = table.insertRow();
+      const tr = body.insertRow();
       for (const column of reply.columns) {
-        tr.insertCell().textContent = row[column.field] ?? "";
+        const cell = tr.insertCell();
+        cell.textContent = row[column.field] ?? "";
+        cell.dataset.label = column.title;
       }
     }
   }
