@@ -5,15 +5,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta
-name=“description”
-content=“Справочная служба кинотеатров — информация о кинотеатрах, фильмах и репертуаре”
-
+  <meta name="description" content="Справочная служба кинотеатров — информация о кинотеатрах, фильмах и репертуаре">
+  <meta name="theme-color" content="#2c3e50">
   <title>Справочная служба кинотеатров</title>
+  <script>
+    // Ставим тему до отрисовки страницы, чтобы не было вспышки светлой темы.
+    // Список тем должен совпадать с THEMES в app.js.
+    (function () {
+      var themes = ["light", "dark", "sunset", "ocean", "aurora", "cinema"];
+      var theme = null;
+      try { theme = localStorage.getItem("theme"); } catch (e) {}
+      if (themes.indexOf(theme) === -1) {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <section id="login-view" aria-labelledby="login-title">
+    <div class="theme-picker login-theme"></div>
     <form id="login-form" class="card login">
       <h1 id="login-title">Справочная служба кинотеатров</h1>
   <div class="form-fields">
@@ -94,6 +106,7 @@ content=“Справочная служба кинотеатров — инфо
       </button>
     </nav>
     <div class="user">
+      <div class="theme-picker"></div>
       <span id="user-info"></span>
       <button
         id="logout"
